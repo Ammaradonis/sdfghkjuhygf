@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --focus: 0 0 0 3px rgba(253,181,21,.6);
+}
+
+html:focus-within { scroll-behavior: smooth; }
+* { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: var(--focus); }
+.skip-link{ position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;}
+.skip-link:focus{ left:0; top:0; width:auto; height:auto; padding:0.5rem 1rem; background:#000; color:#fff; z-index:50; }
+
+.btn{ @apply inline-flex items-center justify-center rounded-2xl px-6 h-14 font-semibold shadow-soft transition; }
+.btn-red{ @apply bg-ggRed text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ggRed/60; }
+.btn-ghost{ @apply border border-white text-white hover:bg-white/10; }
+.btn-gray{ @apply border border-fogGray text-fogGray hover:bg-fogGray hover:text-white; }
+
+header a:focus-visible, nav button:focus-visible, .btn:focus-visible { box-shadow: var(--focus); }
+
+/* Video overlay for hero */
+.hero-overlay{ background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.35)); }
+main{ @apply bg-white text-black; }
+footer{ @apply bg-sfDark text-white; }
+footer a{ @apply underline-offset-4 hover:underline; }

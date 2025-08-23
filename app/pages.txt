@@ -1,0 +1,398 @@
+page0accessibility.tsx                                                                              0000666 0000000 0000000 00000000757 15050623635 012272  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Link from "next/link"
+
+export const metadata = { title: "Accessibility Statement | 3rd Street Boxing Gym" }
+
+export default function Page(){
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">Accessibility Statement</h1>
+      <div className="prose max-w-none">
+        <p>We aim for WCAG 2.1 AA compliance. Keyboard navigable UI, sufficient contrast, and alt text across imagery.</p>
+      </div>
+    </div>
+  )
+}
+                 page0bootcamp.tsx                                                                                   0000666 0000000 0000000 00000000756 15050623635 011246  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Link from "next/link"
+
+export const metadata = { title: "BREAK A SWEAT, NOT YOUR COMMUTE | 3rd Street Boxing Gym" }
+
+export default function Page(){
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">BREAK A SWEAT, NOT YOUR COMMUTE</h1>
+      <div className="prose max-w-none">
+        <p>Sea Cliff Smasher and Mission Mayhem camps. Finish 6 weeks → ‘Bay to Bag’ challenge.</p>
+      </div>
+    </div>
+  )
+}
+                  page0classes.tsx                                                                                    0000666 0000000 0000000 00000010650 15050623635 011071  0                                                                                                    ustar                                                                                                                                                                                                                                                          "use client"
+import { useEffect, useState } from "react"
+import clsx from "classnames"
+
+type Session = {
+  id: number
+  startsAt: string
+  durationMin: number
+  location: string
+  capacity: number
+  booked: number
+}
+
+const TABS = [
+  {key:"beginner", name:"Beginner (Fog Cutter)"},
+  {key:"intermediate", name:"Intermediate (Bay Bridger)"},
+  {key:"advanced", name:"Advanced (Twin Peaks Climber)"},
+  {key:"youth", name:"Youth (Future Champs)"},
+  {key:"sparring", name:"Sparring (Fog City Fights)"},
+]
+
+export default function ClassesPage(){
+  const [tab,setTab]=useState("beginner")
+  const [sessions,setSessions]=useState<Session[]>([])
+  useEffect(()=>{
+    fetch("/api/schedule?class=beginner").then(r=>r.json()).then(setSessions)
+  },[])
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">CLASSES</h1>
+
+      <div role="tablist" aria-label="Class levels" className="flex flex-wrap gap-2 mb-8">
+        {TABS.map(t=>(
+          <button key={t.key} role="tab" aria-selected={tab===t.key} aria-controls={`${t.key}-panel`} onClick={()=>setTab(t.key)} className={clsx("px-4 h-12 rounded-2xl border", tab===t.key && "bg-ggRed text-white border-ggRed")}>{t.name}</button>
+        ))}
+      </div>
+
+      <section id="beginner-panel" role="tabpanel" aria-labelledby="beginner" hidden={tab!=="beginner"}>
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-2xl font-semibold">Beginner: Fog Cutter</h2>
+            <p className="mt-2 text-fogGray">Group of beginner boxers, mixed ages and ethnicities, practicing jabs in front of large windows with San Francisco cityscape visible.</p>
+            <ul className="mt-4 list-disc pl-6 text-fogGray">
+              <li>Learn stance, jab-cross, and defense — smoother than a cable car descent down Powell St.</li>
+              <li>Friendly, ego-free atmosphere. Gloves provided.</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">Upcoming sessions</h3>
+            <div className="overflow-x-auto mt-3 border rounded-2xl">
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-50">
+                  <tr><th className="text-left p-3">When</th><th className="text-left p-3">Location</th><th className="text-left p-3">Spots</th><th className="text-left p-3">Action</th></tr>
+                </thead>
+                <tbody>
+                  {sessions.map(s=>{
+                    const d = new Date(s.startsAt)
+                    const spots = Math.max(0, s.capacity - s.booked)
+                    return (
+                      <tr key={s.id} className="border-t">
+                        <td className="p-3">{d.toLocaleString([], {weekday:"short", month:"short", day:"numeric", hour:"numeric", minute:"2-digit"})} · {s.durationMin}m</td>
+                        <td className="p-3">{s.location}</td>
+                        <td className="p-3">{spots}</td>
+                        <td className="p-3"><a className="btn btn-red h-10" href={`/book/${s.id}`}>Book</a></td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="book" className="mt-10 p-6 rounded-2xl border">
+          <h3 className="text-xl font-semibold mb-3">BOOK YOUR FIRST CLASS (50% OFF)</h3>
+          <form action="/api/booking" method="post" className="grid md:grid-cols-3 gap-3">
+            <input type="hidden" name="sessionId" value={sessions[0]?.id || ""} />
+            <label className="sr-only" htmlFor="name">Name</label>
+            <input id="name" name="name" required aria-required className="h-12 rounded-2xl px-3 border" placeholder="Your name"/>
+            <label className="sr-only" htmlFor="email">Email</label>
+            <input id="email" type="email" name="email" required aria-required className="h-12 rounded-2xl px-3 border" placeholder="Email"/>
+            <button className="btn btn-red h-12" type="submit">Reserve</button>
+          </form>
+        </div>
+      </section>
+
+      {TABS.filter(t=>t.key!=="beginner").map(t=>(
+        <section key={t.key} id={`${t.key}-panel`} role="tabpanel" aria-labelledby={t.key} hidden={tab!==t.key} className="text-fogGray">
+          <p className="italic">Details coming online — stop by the front desk to ask about {t.name}.</p>
+        </section>
+      ))}
+    </div>
+  )
+}
+                                                                                        page0contact.tsx                                                                                    0000666 0000000 0000000 00000000647 15050623635 011074  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Link from "next/link"
+
+export const metadata = { title: "Contact | 3rd Street Boxing Gym" }
+
+export default function Page(){
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">Contact</h1>
+      <div className="prose max-w-none">
+        <p>Got questions? Reach out via the form below or call the front desk.</p>
+      </div>
+    </div>
+  )
+}
+                                                                                         page0fascilities.tsx                                                                                0000666 0000000 0000000 00000000715 15050623635 011734  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Link from "next/link"
+
+export const metadata = { title: "Facilities & Open Gym | 3rd Street Boxing Gym" }
+
+export default function Page(){
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">Facilities & Open Gym</h1>
+      <div className="prose max-w-none">
+        <p>Ring, heavy bags, speed bags, strength zone, showers, lockers, towel service.</p>
+      </div>
+    </div>
+  )
+}
+                                                   page0join.tsx                                                                                       0000666 0000000 0000000 00000000630 15050623635 010370  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Link from "next/link"
+
+export const metadata = { title: "Join | 3rd Street Boxing Gym" }
+
+export default function Page(){
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">Join</h1>
+      <div className="prose max-w-none">
+        <p>Pick a membership that fits. No contracts, no hidden fees.</p>
+      </div>
+    </div>
+  )
+}
+                                                                                                        page0personal0training.tsx                                                                          0000666 0000000 0000000 00000000665 15050623635 013100  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Link from "next/link"
+
+export const metadata = { title: "Personal Training | 3rd Street Boxing Gym" }
+
+export default function Page(){
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">Personal Training</h1>
+      <div className="prose max-w-none">
+        <p>Meet our coaches and book 1-on-1 sessions. Packages from $85.</p>
+      </div>
+    </div>
+  )
+}
+                                                                           page0schedule.tsx                                                                                   0000666 0000000 0000000 00000000642 15050623635 011230  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Link from "next/link"
+
+export const metadata = { title: "Schedule | 3rd Street Boxing Gym" }
+
+export default function Page(){
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">Schedule</h1>
+      <div className="prose max-w-none">
+        <p>Interactive weekly schedule with filters and direct booking.</p>
+      </div>
+    </div>
+  )
+}
+                                                                                              page0youth.tsx                                                                                      0000666 0000000 0000000 00000000670 15050623635 010605  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Link from "next/link"
+
+export const metadata = { title: "Youth Boxing | 3rd Street Boxing Gym" }
+
+export default function Page(){
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h1 className="text-4xl font-bold mb-6">Youth Boxing</h1>
+      <div className="prose max-w-none">
+        <p>Ages 8–16. All coaches CPR certified. Focus on fun, respect, and growth.</p>
+      </div>
+    </div>
+  )
+}
+                                                                        route0api0booking.ts                                                                                0000666 0000000 0000000 00000002134 15050623635 011666  0                                                                                                    ustar                                                                                                                                                                                                                                                          import { NextResponse } from "next/server"
+import { PrismaClient } from "@prisma/client"
+import { z } from "zod"
+const prisma = new PrismaClient()
+
+const BookingSchema = z.object({
+  sessionId: z.coerce.number(),
+  name: z.string().min(2),
+  email: z.string().email(),
+})
+
+export async function POST(req: Request){
+  const form = await req.formData()
+  const data = BookingSchema.safeParse({
+    sessionId: form.get("sessionId"),
+    name: form.get("name"),
+    email: form.get("email"),
+  })
+  if(!data.success) return NextResponse.json({error:"Invalid input"}, {status:400})
+
+  const s = await prisma.classSession.findUnique({ where: { id: data.data.sessionId } })
+  if(!s) return NextResponse.json({error:"Session not found"}, {status:404})
+  if(s.booked >= s.capacity) return NextResponse.json({error:"Session full"}, {status:400})
+
+  await prisma.booking.create({
+    data: { sessionId: s.id, name: data.data.name, email: data.data.email }
+  })
+  await prisma.classSession.update({ where:{id:s.id}, data:{ booked: s.booked + 1 } })
+  return NextResponse.json({ok:true, message:"Booked! See you in the gym."})
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                    route0api0newsletter.ts                                                                             0000666 0000000 0000000 00000001133 15050623635 012430  0                                                                                                    ustar                                                                                                                                                                                                                                                          import { NextResponse } from "next/server"
+import { PrismaClient } from "@prisma/client"
+import { z } from "zod"
+const prisma = new PrismaClient()
+
+const Schema = z.object({ email: z.string().email() })
+
+export async function POST(req: Request){
+  const form = await req.formData()
+  const email = String(form.get("email") || "")
+  const parsed = Schema.safeParse({ email })
+  if(!parsed.success) return NextResponse.json({error:"Invalid email"}, {status:400})
+  await prisma.newsletter.upsert({
+    where: { email },
+    update: {},
+    create: { email }
+  })
+  return NextResponse.json({ ok:true })
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                     route0api0schedule.ts                                                                               0000666 0000000 0000000 00000000442 15050623635 012032  0                                                                                                    ustar                                                                                                                                                                                                                                                          import { NextResponse } from "next/server"
+import { PrismaClient } from "@prisma/client"
+const prisma = new PrismaClient()
+
+export async function GET(){
+  const sessions = await prisma.classSession.findMany({ take: 10, orderBy: { startsAt: 'asc' } })
+  return NextResponse.json(sessions)
+}
+                                                                                                                                                                                                                              globals.css                                                                                         0000666 0000000 0000000 00000002256 15050623635 010117  0                                                                                                    ustar                                                                                                                                                                                                                                                          @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --focus: 0 0 0 3px rgba(253,181,21,.6);
+}
+
+html:focus-within { scroll-behavior: smooth; }
+* { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: var(--focus); }
+.skip-link{ position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;}
+.skip-link:focus{ left:0; top:0; width:auto; height:auto; padding:0.5rem 1rem; background:#000; color:#fff; z-index:50; }
+
+.btn{ @apply inline-flex items-center justify-center rounded-2xl px-6 h-14 font-semibold shadow-soft transition; }
+.btn-red{ @apply bg-ggRed text-white hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ggRed/60; }
+.btn-ghost{ @apply border border-white text-white hover:bg-white/10; }
+.btn-gray{ @apply border border-fogGray text-fogGray hover:bg-fogGray hover:text-white; }
+
+header a:focus-visible, nav button:focus-visible, .btn:focus-visible { box-shadow: var(--focus); }
+
+/* Video overlay for hero */
+.hero-overlay{ background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.35)); }
+main{ @apply bg-white text-black; }
+footer{ @apply bg-sfDark text-white; }
+footer a{ @apply underline-offset-4 hover:underline; }
+                                                                                                                                                                                                                                                                                                                                                  layout.tsx                                                                                          0000666 0000000 0000000 00000001751 15050623635 010036  0                                                                                                    ustar                                                                                                                                                                                                                                                          import type { Metadata } from "next"
+import "./globals.css"
+import Header from "@/components/Header"
+import Footer from "@/components/Footer"
+import { NextSeo } from "next-seo"
+
+export const metadata: Metadata = {
+  title: "3rd Street Boxing Gym | Dogpatch's Fight Factory Since 2005",
+  description: "Authentic Boxing in San Francisco's Dogpatch. Classes for all levels, Academy, Bootcamp, Personal Training, Youth programs, and Open Gym.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000")
+}
+
+export default function RootLayout({children}:{children:React.ReactNode}){
+  return (
+    <html lang="en">
+      <body className="font-muni antialiased">
+        <NextSeo
+          title="3rd Street Boxing Gym | Dogpatch's Fight Factory Since 2005"
+          openGraph={{ type:"website", locale:"en_US", siteName:"3rd Street Boxing Gym" }}
+        />
+        <Header />
+        <main id="main-content">{children}</main>
+        <Footer />
+      </body>
+    </html>
+  )
+}
+                       page.tsx                                                                                            0000666 0000000 0000000 00000012037 15050623635 007434  0                                                                                                    ustar                                                                                                                                                                                                                                                          import Image from "next/image"
+import Link from "next/link"
+
+export default function Home(){
+  return (
+    <div>
+      {/* Hero */}
+      <section aria-label="Hero" className="relative h-[70vh] min-h-[520px]">
+        <video className="absolute inset-0 w-full h-full object-cover" autoPlay loop muted playsInline aria-label="Boxers training in 3rd Street Boxing Gym with heavy bags and speed bags, Bay Bridge visible through large industrial windows.">
+          <source src="/videos/hero.mp4" type="video/mp4" />
+        </video>
+        <div className="hero-overlay absolute inset-0"></div>
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center text-white px-4">
+          <h1 className="text-4xl md:text-6xl font-bold">WHERE SF’S TOUGHEST FIND THEIR STRENGTH</h1>
+          <p className="mt-4 text-lg md:text-2xl">Authentic Boxing. Real Community. No Frills.</p>
+          <div className="mt-8 flex gap-4 flex-wrap justify-center">
+            <Link className="btn btn-red" href="/classes#book">CLAIM YOUR 50% OFF FIRST ROUND</Link>
+            <Link className="btn btn-ghost border-white" href="/schedule">SEE OUR SCHEDULE</Link>
+            <Link className="inline-flex items-center gap-2 underline" href="/personal-training">MEET OUR COACHES →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Services grid */}
+      <section aria-labelledby="programs" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <h2 id="programs" className="text-3xl font-bold mb-8">SF-TOUGH PROGRAMS</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            {href:"/classes", title:"CLASSES", copy:"From FiDi desk warriors to Mission artists – find your level. Beginner to pro sessions daily.", icon:"classes"},
+            {href:"/academy", title:"ACADEMY", copy:"Compete in SF’s amateur circuit? Our Castro-to-Chinatown champs start here.", icon:"academy"},
+            {href:"/bootcamp", title:"BOOTCAMP", copy:"Conquer hills steeper than California Street.", icon:"bootcamp"},
+            {href:"/personal-training", title:"PERSONAL TRAINING", copy:"1-on-1 sessions sharper than a cable car bell.", icon:"pt"},
+            {href:"/youth", title:"YOUTH", copy:"Build confidence stronger than Sutro Tower.", icon:"youth"},
+            {href:"/facilities", title:"FACILITIES", copy:"Open gym access with ring, bags, and strength zone.", icon:"facilities"}
+          ].map(card=>(
+            <Link key={card.title} href={card.href} className="rounded-2xl border p-6 hover:shadow-soft">
+              <div aria-hidden className="text-ggRed text-3xl mb-3">🥊</div>
+              <h3 className="text-xl font-semibold">{card.title}</h3>
+              <p className="mt-2 text-fogGray">{card.copy}</p>
+              <span className="mt-4 inline-flex items-center gap-2 text-ggRed font-semibold">Learn more →</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Ed Tribute */}
+      <section aria-labelledby="ed" className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 id="ed" className="text-3xl font-bold mb-2">IRON MAN STRONG: ED’S COMEBACK JOURNEY</h2>
+          <p className="text-fogGray mb-6">From 2017 to 2025: resilience, community, and the long road back.</p>
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <Image src="https://images.unsplash.com/photo-1517964603305-11c1f0be9d82?q=80&w=1200&auto=format&fit=crop" width={1200} height={800} alt="Ed Gutierrez, a Hispanic man in his 60s, mitts up with a young boxer in the ring, both smiling" className="rounded-2xl shadow-soft"/>
+            <ol className="space-y-3">
+              {["2017: Stroke","2019: First steps","2021: Back in the gym","2023: Coaching again","2025: Leading classes"].map((t,i)=>(
+                <li key={i} className="p-4 rounded-2xl bg-white border">{t}</li>
+              ))}
+            </ol>
+          </div>
+          <div className="mt-6">
+            <Link className="btn btn-red" href="https://gofundme.com" target="_blank" rel="noopener">SUPPORT ED’S NEXT ROUND</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section aria-labelledby="testimonials" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <h2 id="testimonials" className="text-3xl font-bold mb-8">HEAR IT FROM THE NEIGHBORHOOD</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <figure className="rounded-2xl border p-6">
+            <blockquote className="text-xl">“Shredded my pandemic ‘Dolores Park bod’ in 8 weeks! More energizing than Philz coffee.”</blockquote>
+            <figcaption className="mt-4 text-fogGray">Sarah K. | SoMa</figcaption>
+          </figure>
+          <figure className="rounded-2xl border p-6">
+            <blockquote className="text-xl">“Went from shy to school champ. Coaches here are like family.”</blockquote>
+            <figcaption className="mt-4 text-fogGray">Diego R. | Sunset</figcaption>
+          </figure>
+        </div>
+      </section>
+    </div>
+  )
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 

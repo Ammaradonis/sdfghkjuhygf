@@ -1,0 +1,27 @@
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  await prisma.trainer.create({
+    data: {
+      name: "Jamal Chen",
+      nickname: "The Technician",
+      bio: "NASM Certified. Transformed 200+ SF tech workers from keyboard warriors to ring warriors.",
+      photoUrl: "/images/trainers/jamal.jpg",
+      specialties: "MMA, Boxing, Kickboxing, Muay Thai, Form, Conditioning, Beginner"
+    },
+  });
+
+  console.log("Seed data created!");
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
